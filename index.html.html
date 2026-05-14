@@ -224,7 +224,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .pw-fill{height:100%;border-radius:3px;background:var(--grad);width:0%;transition:width .5s cubic-bezier(.22,1,.36,1)}
 .pw-count{font-size:22px;font-weight:800}
 .pw-count small{font-size:12px;font-weight:400;color:var(--txt2)}
-.habit-card{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg2);border:1px solid var(--line2);border-radius:16px;transition:border-color .3s;animation:fadein .38s cubic-bezier(.22,1,.36,1) both}
+.habit-card{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg2);border:1px solid var(--line2);border-radius:16px;transition:border-color .3s;animation:fadein .38s cubic-bezier(.22,1,.36,1) both}
+.hc-chk{margin-top:3px} /* alinhamento com label */
+.hc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center}
 @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .habit-card.done{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)}
 .habit-card.flash{animation:hflash .6s ease forwards}
@@ -237,7 +239,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .hc-txt::after{content:'';position:absolute;left:0;top:50%;width:0;height:1.5px;background:var(--txt3);transition:width .38s}
 .habit-card.done .hc-txt{color:var(--txt2)}
 .habit-card.done .hc-txt::after{width:100%}
-.proof-lbl{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;flex-shrink:0;background:var(--grad);color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.proof-lbl{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:10px;background:var(--grad);color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .proof-lbl:active{opacity:.8}
 .proof-lbl input[type="file"]{display:none}
 .proof-lbl.uploading{opacity:.6;pointer-events:none}
@@ -395,10 +397,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 /* ── RESET HABIT ──────────────────────────── */
 .reset-btn{
   display:none;align-items:center;gap:4px;
-  padding:5px 10px;border-radius:8px;flex-shrink:0;
+  padding:6px 11px;border-radius:8px;
   background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);
   color:var(--rose);font-size:11px;font-weight:700;cursor:pointer;
-  transition:all .2s;-webkit-tap-highlight-color:transparent;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap;
 }
 .reset-btn:hover{background:rgba(244,63,94,.18)}
 .habit-card.done .reset-btn{display:inline-flex}
@@ -1408,13 +1410,15 @@ function showHabits(){
       '<div class="hc-body">'+
         '<div class="hc-lbl">'+getHabitLabel(i)+'</div>'+
         '<div class="hc-txt">'+h+'</div>'+
-      '</div>'+
-      '<label class="proof-lbl'+(sent?" sent":"") +'" id="plbl-'+i+'">'+
-        '<input type="file" accept="image/*" capture="environment" onchange="handleProof(event,'+i+')">'+
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'+
-        '<span>'+(sent?"Enviado ✓":"Comprovar")+'</span>'+
-      '</label>'+
-      '<button class="reset-btn" onclick="resetHabit('+i+')">&#8635; Refazer</button>';
+        '<div class="hc-actions">'+
+          '<label class="proof-lbl'+(sent?" sent":"") +'" id="plbl-'+i+'">'+
+            '<input type="file" accept="image/*" capture="environment" onchange="handleProof(event,'+i+')">'+
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'+
+            '<span>'+(sent?"Enviado ✓":"Comprovar")+'</span>'+
+          '</label>'+
+          '<button class="reset-btn" onclick="resetHabit('+i+')">&#8635; Refazer</button>'+
+        '</div>'+
+      '</div>';
     list.appendChild(row);
   });
   qs("#habits-sec").classList.add("show");
@@ -1530,32 +1534,76 @@ function renderRanking() {
   var posCount = {};
   positions.forEach(function(p){ posCount[p] = (posCount[p]||0)+1; });
 
-  /* ── Pódio ── */
+  /* ── Pódio com suporte a empates ── */
   var pod = qs("#podium");
   pod.innerHTML = "";
   var hasPoints = list.some(function(m){ return m.pts > 0; });
 
-  if (hasPoints && list.length >= 3) {
-    /* Top 3 sem empate perfeito: exibe pódio normal */
-    var order  = [list[1], list[0], list[2]];
-    var cls    = ["pod-2","pod-1","pod-3"];
-    var medals = ["&#129695;","&#128081;","&#129352;"];
-    order.forEach(function(m, i) {
-      var col = document.createElement("div");
-      col.className = "pod-col " + cls[i];
-      col.innerHTML =
-        (cls[i]==="pod-1" ? '<div style="font-size:16px">&#128081;</div>' : '') +
-        '<div class="pod-av" style="background:'+m.color+'">'+initials(m.name)+'</div>'+
-        '<div class="pod-name">'+m.name+'</div>'+
-        '<div class="pod-pts">'+m.pts+' pts</div>'+
-        '<div class="pod-base">'+medals[i]+'</div>';
-      pod.appendChild(col);
-    });
-  } else {
+  if (!hasPoints) {
     pod.innerHTML =
       '<div style="text-align:center;padding:20px 10px;color:var(--txt3);font-size:13px">'+
         '&#9889; Realize hábitos para aparecer no ranking'+
       '</div>';
+  } else {
+    /* Agrupa por pontuação → cada grupo é uma posição no pódio */
+    var groups = [];
+    list.forEach(function(m) {
+      var last = groups[groups.length - 1];
+      if (last && last.pts === m.pts) last.members.push(m);
+      else groups.push({ pts: m.pts, members: [m] });
+    });
+
+    /* Configs por posição: [1º, 2º, 3º] */
+    var podCfg = [
+      { symbol:'&#128081;', cls:'pod-1' }, /* 1º: coroa */
+      { symbol:'&#129696;', cls:'pod-2' }, /* 2º: medal prata */
+      { symbol:'&#129697;', cls:'pod-3' }  /* 3º: medal bronze */
+    ];
+
+    /* Ordem visual no pódio: 2º | 1º | 3º */
+    var displayOrder = [1, 0, 2];
+    displayOrder.forEach(function(gIdx) {
+      var group = groups[gIdx];
+      if (!group) return;
+      var cfg   = podCfg[gIdx];
+
+      var col = document.createElement("div");
+      col.className = "pod-col " + cfg.cls;
+
+      /* Símbolo acima */
+      var symHTML = '<div style="font-size:16px;margin-bottom:2px">'+cfg.symbol+'</div>';
+
+      /* Avatar(es) — múltiplos se empatados */
+      var avHTML = '';
+      var nameHTML = '';
+      if (group.members.length === 1) {
+        var m = group.members[0];
+        avHTML   = '<div class="pod-av" style="background:'+m.color+'">'+initials(m.name)+'</div>';
+        nameHTML = '<div class="pod-name">'+m.name+'</div>';
+      } else {
+        var sz = group.members.length > 2 ? '36px' : '46px';
+        var fs = group.members.length > 2 ? '11px' : '14px';
+        avHTML = '<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap">';
+        var nameArr = [];
+        group.members.forEach(function(m) {
+          avHTML += '<div class="pod-av" style="background:'+m.color+';width:'+sz+';height:'+sz+';font-size:'+fs+'">'+initials(m.name)+'</div>';
+          nameArr.push(m.name);
+        });
+        avHTML  += '</div>';
+        nameHTML = '<div class="pod-name" style="font-size:10px">'+nameArr.join(' & ')+'</div>';
+      }
+
+      col.innerHTML = symHTML + avHTML + nameHTML +
+        '<div class="pod-pts">'+group.pts+' pts</div>';
+
+      /* Base do pódio */
+      var base = document.createElement("div");
+      base.className = "pod-base " + cfg.cls;
+      base.innerHTML = gIdx === 0 ? '&#129351;' : (gIdx === 1 ? '&#129352;' : '&#129353;');
+      col.appendChild(base);
+
+      pod.appendChild(col);
+    });
   }
 
   /* ── Lista completa com indicador de empate ── */
@@ -1740,6 +1788,7 @@ function loadUserPosts() {
           ? 'background-image:url('+d.imageUrl+');background-size:cover;background-position:center'
           : 'background:linear-gradient(135deg,#1a0a2e,#3b0764)';
 
+        var docId = doc.id;
         item.innerHTML =
           '<div class="prof-activity-thumb" style="'+thumbStyle+'">'+
             (d.imageUrl ? '' : '&#9889;')+
@@ -1748,7 +1797,15 @@ function loadUserPosts() {
             '<div class="prof-activity-habit">'+(d.habitText||'Hábito')+'</div>'+
             '<div class="prof-activity-time">'+ts+'</div>'+
             (approved ? '<div class="prof-activity-approved">&#127942; Aprovado por todos</div>' : '')+
-          '</div>';
+          '</div>'+
+          '<button class="delete-post-btn" title="Apagar atividade" style="align-self:flex-start">'+
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>'+
+          '</button>';
+
+        /* Adiciona o listener após criar o innerHTML para capturar o docId correto */
+        item.querySelector('.delete-post-btn').addEventListener('click', (function(id) {
+          return function(ev) { deletePost(ev, id); };
+        })(docId));
 
         container.appendChild(item);
       });
@@ -2015,16 +2072,33 @@ function disapprovePost(e, postId) {
    APAGAR POST (apenas o autor)
 ══════════════════════════════════════════ */
 function deletePost(e, postId) {
-  e.stopPropagation();
+  if (e) e.stopPropagation();
   if (!currentUser) return;
   var post = livePosts.find(function(p){ return p.id === postId; });
   if (!post || post.name !== currentUser.name) return;
-  if (!confirm('Apagar esta atividade do feed?')) return;
+  if (!confirm('Apagar esta atividade do feed?\nO progresso do hábito também será revertido.')) return;
+
+  /* Reverte o progresso local do hábito correspondente */
+  if (todayDraw && post.habit) {
+    var idx = todayDraw.habits.indexOf(post.habit);
+    if (idx >= 0 && todayDraw.completed[idx]) {
+      todayDraw.completed[idx] = false;
+      if (todayDraw.photos) todayDraw.photos[idx] = null;
+      userDoneCount = todayDraw.completed.filter(Boolean).length;
+      userDoneToday = userDoneCount > 0;
+      try { sessionStorage.setItem("draw_"+today(), JSON.stringify(todayDraw)); } catch(er){}
+      /* Atualiza UI da Roleta */
+      showHabits();
+      updateProgBar();
+      updateEnergy();
+    }
+  }
 
   db.collection("posts").doc(postId).delete()
     .then(function(){
-      toast('&#128465; Atividade apagada do feed.', 2500);
-      /* onSnapshot atualiza o feed automaticamente */
+      toast('&#128465; Atividade apagada.', 2500);
+      /* Atualiza perfil se estiver visível */
+      if (qs('#view-profile').classList.contains('active')) loadUserPosts();
     })
     .catch(function(err){
       console.error('Erro ao apagar:', err);

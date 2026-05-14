@@ -468,6 +468,23 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 }
 .btn-roll-confirm:disabled{opacity:.4;pointer-events:none}
 .btn-roll-confirm:active{transform:scale(.97)}
+.btn-roll-back{padding:10px 16px;border-radius:12px;background:var(--bg3);border:1px solid var(--line2);color:var(--txt2);font-size:13px;font-weight:600;transition:all .2s}
+.btn-roll-back:hover{border-color:rgba(124,58,237,.3);color:var(--purple)}
+
+/* Indicador de etapa do roll */
+.roll-steps{display:flex;align-items:center;gap:8px;padding-bottom:16px}
+.roll-step{flex:1;padding:6px 8px;border-radius:8px;font-size:11px;font-weight:700;color:var(--txt3);background:var(--bg3);text-align:center;transition:all .2s}
+.roll-step.active{background:var(--pdim);color:var(--purple);border:1px solid rgba(124,58,237,.2)}
+.roll-step-arr{font-size:14px;color:var(--txt3);flex-shrink:0}
+
+/* Botão deletar post */
+.delete-post-btn{width:32px;height:32px;border-radius:50%;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.18);display:flex;align-items:center;justify-content:center;color:var(--rose);transition:all .2s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.delete-post-btn:hover,.delete-post-btn:active{background:rgba(244,63,94,.2)}
+
+/* Seção atual no roll (step 2) */
+.roll-swap-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.roll-swap-label::before,.roll-swap-label::after{content:'';flex:1;height:1px;background:var(--line)}
+.roll-option-sub{font-size:10px;color:var(--txt3);flex-shrink:0}
 
 /* ── DISAPPROVE ───────────────────────────── */
 .disapprove-btn{
@@ -851,16 +868,36 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <div class="sn-timer" id="sn-timer" style="width:100%"></div>
 </div>
 
-<!-- ROLL MODAL -->
+<!-- ROLL MODAL (2 etapas) -->
 <div id="roll-bg" onclick="handleRollBg(event)">
   <div id="roll-sheet">
     <div class="sheet-handle"></div>
-    <div class="roll-sheet-title">&#127922; Trocar Atividade</div>
-    <div class="roll-sheet-sub" id="roll-sheet-sub">Selecione até 2 para trocar com as suas</div>
-    <div class="roll-options" id="roll-options"></div>
+
+    <!-- Indicador de etapas -->
+    <div class="roll-steps">
+      <div class="roll-step active" id="rstep-1">1. Nova atividade</div>
+      <div class="roll-step-arr">&#8594;</div>
+      <div class="roll-step" id="rstep-2">2. O que substituir</div>
+    </div>
+
+    <!-- Etapa 1: Escolher nova atividade -->
+    <div id="roll-step-1">
+      <div class="roll-sheet-title">&#127922; Escolha uma nova atividade</div>
+      <div class="roll-sheet-sub" id="roll-sub-1">Trocas restantes hoje: 2</div>
+      <div class="roll-options" id="roll-new-options"></div>
+    </div>
+
+    <!-- Etapa 2: Escolher qual substituir -->
+    <div id="roll-step-2" style="display:none">
+      <div class="roll-sheet-title">&#8651; O que substituir?</div>
+      <div class="roll-sheet-sub" id="roll-sub-2">Nova atividade selecionada</div>
+      <div class="roll-swap-label">Suas atividades pendentes</div>
+      <div class="roll-options" id="roll-current-options"></div>
+    </div>
+
     <div class="roll-footer">
-      <div class="roll-sel-info">Selecionadas: <strong id="roll-sel-count">0</strong>/2</div>
-      <button class="btn-roll-confirm" id="roll-confirm" onclick="confirmRoll()" disabled>Confirmar</button>
+      <button class="btn-roll-back" id="roll-back" onclick="rollGoBack()" style="display:none">&#8592; Voltar</button>
+      <button class="btn-roll-confirm" id="roll-confirm" onclick="rollNext()" disabled>Próximo &#8594;</button>
     </div>
   </div>
 </div>
@@ -1213,10 +1250,13 @@ function buildLiveCard(p) {
     approvalSection =
       '<div class="card-approvals">'+
         '<div class="own-approval-wrap">'+
-          '<span>&#11088; Aprovações: '+approvalCount+'/'+needed+'</span>'+
+          '<span>&#11088; '+approvalCount+'/'+needed+' aprovações</span>'+
           (isFull ? '<span class="own-approval-full">&#127881; Bônus garantido!</span>' : '')+
-          (disapprCount>0 ? '<span style="font-size:11px;color:var(--rose)">&#10007; '+disapprCount+' reprovação(ões)</span>' : '')+
+          (disapprCount>0 ? '<span style="font-size:11px;color:var(--rose)">&#10007; '+disapprCount+'</span>' : '')+
         '</div>'+
+        '<button class="delete-post-btn" onclick="deletePost(event,\''+p.id+'\')" title="Apagar atividade">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>'+
+        '</button>'+
       '</div>';
   }
 
@@ -1661,10 +1701,9 @@ function loadUserPosts() {
   container.innerHTML =
     '<div style="padding:24px;text-align:center;font-size:12px;color:var(--txt3)">Carregando...</div>';
 
+  /* Sem .orderBy para evitar exigir índice composto no Firestore; ordena client-side */
   db.collection("posts")
     .where("userName", "==", currentUser.name)
-    .orderBy("timestamp", "desc")
-    .limit(30)
     .get()
     .then(function(snap) {
       qs('#pstat-posts').textContent = snap.size;
@@ -1681,7 +1720,16 @@ function loadUserPosts() {
       container.innerHTML = '';
       var needed = SQUAD.length - 1;
 
-      snap.docs.forEach(function(doc) {
+      /* Ordena por timestamp decrescente client-side */
+      var sorted = snap.docs.slice().sort(function(a, b) {
+        var ta = a.data().timestamp, tb = b.data().timestamp;
+        if (!ta && !tb) return 0;
+        if (!ta) return 1;
+        if (!tb) return -1;
+        return tb.toMillis() - ta.toMillis();
+      });
+
+      sorted.forEach(function(doc) {
         var d        = doc.data();
         var approved = (d.approvals || []).length >= needed;
         var ts       = d.timestamp ? timeAgo(d.timestamp) : 'recente';
@@ -1892,34 +1940,31 @@ function updateBonusUI() {
 function approvePost(e, postId) {
   e.stopPropagation();
   if (!currentUser) return;
-
   var post = livePosts.find(function(p){ return p.id === postId; });
-  if (!post) return;
+  if (!post || post.name === currentUser.name) return;
 
-  /* Não pode aprovar o próprio post */
-  if (post.name === currentUser.name) {
-    toast("Você não pode aprovar sua própria atividade.", 2000);
-    return;
-  }
+  var alreadyApproved = post.approvals.indexOf(currentUser.name) >= 0;
 
-  /* Já aprovou */
-  if (post.approvals.indexOf(currentUser.name) >= 0) return;
-
-  /* Registra aprovação no Firestore (arrayUnion evita duplicatas) */
+  /* Toggle: se já aprovou, remove; senão adiciona */
   db.collection("posts").doc(postId).update({
-    approvals: firebase.firestore.FieldValue.arrayUnion(currentUser.name)
+    approvals: alreadyApproved
+      ? firebase.firestore.FieldValue.arrayRemove(currentUser.name)
+      : firebase.firestore.FieldValue.arrayUnion(currentUser.name)
   }).then(function() {
-    var newCount = post.approvals.length + 1;
-    var needed   = SQUAD.length - 1;
-    if (newCount >= needed) {
-      toast("&#127942; "+post.name+" recebeu aprovação total do Squad! Bônus garantido amanhã.", 4500);
+    if (alreadyApproved) {
+      toast("Aprovação removida.", 2000);
     } else {
-      toast("&#10003; Você aprovou a atividade de "+post.name+"! ("+newCount+"/"+needed+")", 2500);
+      var newCount = post.approvals.length + 1;
+      var needed   = SQUAD.length - 1;
+      if (newCount >= needed) {
+        toast("&#127942; "+post.name+" recebeu aprovação total! Bônus garantido amanhã.", 4500);
+      } else {
+        toast("&#10003; Aprovado! ("+newCount+"/"+needed+")", 2500);
+      }
     }
-    /* onSnapshot re-renderiza o feed automaticamente */
   }).catch(function(err){
     console.error("Erro ao aprovar:", err);
-    toast("Erro ao registrar aprovação.", 2500);
+    toast("Erro ao registrar.", 2500);
   });
 }
 
@@ -1949,39 +1994,68 @@ function disapprovePost(e, postId) {
   e.stopPropagation();
   if (!currentUser) return;
   var post = livePosts.find(function(p){ return p.id === postId; });
-  if (!post) return;
-  if (post.name === currentUser.name) { toast('Você não pode reprovar sua própria atividade.', 2000); return; }
-  if ((post.disapprovals||[]).indexOf(currentUser.name) >= 0) return;
+  if (!post || post.name === currentUser.name) return;
 
+  var alreadyDisapp = (post.disapprovals||[]).indexOf(currentUser.name) >= 0;
+
+  /* Toggle: se já reprovou, remove; senão adiciona */
   db.collection("posts").doc(postId).update({
-    disapprovals: firebase.firestore.FieldValue.arrayUnion(currentUser.name)
+    disapprovals: alreadyDisapp
+      ? firebase.firestore.FieldValue.arrayRemove(currentUser.name)
+      : firebase.firestore.FieldValue.arrayUnion(currentUser.name)
   }).then(function(){
-    toast('&#10007; Reprovação registrada para ' + post.name + '.', 2500);
+    toast(alreadyDisapp ? 'Reprovação removida.' : '&#10007; Reprovado.', 2000);
   }).catch(function(err){
     console.error('Erro ao reprovar:', err);
-    toast('Erro ao registrar reprovação.', 2500);
+    toast('Erro ao registrar.', 2500);
   });
+}
+
+/* ══════════════════════════════════════════
+   APAGAR POST (apenas o autor)
+══════════════════════════════════════════ */
+function deletePost(e, postId) {
+  e.stopPropagation();
+  if (!currentUser) return;
+  var post = livePosts.find(function(p){ return p.id === postId; });
+  if (!post || post.name !== currentUser.name) return;
+  if (!confirm('Apagar esta atividade do feed?')) return;
+
+  db.collection("posts").doc(postId).delete()
+    .then(function(){
+      toast('&#128465; Atividade apagada do feed.', 2500);
+      /* onSnapshot atualiza o feed automaticamente */
+    })
+    .catch(function(err){
+      console.error('Erro ao apagar:', err);
+      toast('Erro ao apagar. Tente novamente.', 2500);
+    });
 }
 
 /* ══════════════════════════════════════════
    ROLL / DADO — 2 por dia
 ══════════════════════════════════════════ */
-var rollsLeft      = 2;
-var rollNewHabits  = [];   /* 3 novas atividades geradas */
-var rollSelections = [];   /* índices selecionados (máx 2) */
+/* ══════════════════════════════════════════
+   ROLL / DADO — 2 trocas por dia (2 etapas)
+   Etapa 1: escolhe UMA nova atividade das 3
+   Etapa 2: escolhe QUAL atividade atual substituir
+══════════════════════════════════════════ */
+var rollsLeft       = 2;
+var rollNewHabits   = [];   /* 3 novas atividades geradas */
+var rollPickedNew   = -1;   /* índice em rollNewHabits da escolhida */
+var rollPickedCurrent = -1; /* índice em todayDraw.habits a substituir */
 
 function loadRollsLeft() {
   if (!currentUser) return;
-  var key    = 'rolls_' + today() + '_' + currentUser.name;
-  var stored = sessionStorage.getItem(key);
-  rollsLeft  = stored !== null ? parseInt(stored, 10) : 2;
+  var key   = 'rolls_' + today() + '_' + currentUser.name;
+  var saved = sessionStorage.getItem(key);
+  rollsLeft = saved !== null ? parseInt(saved, 10) : 2;
   updateRollBtn();
 }
 
 function saveRollsLeft() {
   if (!currentUser) return;
-  var key = 'rolls_' + today() + '_' + currentUser.name;
-  sessionStorage.setItem(key, String(rollsLeft));
+  sessionStorage.setItem('rolls_' + today() + '_' + currentUser.name, String(rollsLeft));
 }
 
 function updateRollBtn() {
@@ -1989,97 +2063,160 @@ function updateRollBtn() {
   var badge = qs('#roll-badge');
   if (!btn) return;
   if (rollsLeft > 0) {
-    btn.disabled     = false;
+    btn.disabled      = false;
     badge.textContent = rollsLeft;
-    badge.className  = 'roll-badge';
+    badge.className   = 'roll-badge';
   } else {
-    btn.disabled     = true;
+    btn.disabled      = true;
     badge.textContent = '0';
-    badge.className  = 'roll-badge zero';
+    badge.className   = 'roll-badge zero';
   }
 }
 
+/* ── Abrir modal (gera 3 opções + vai para etapa 1) ── */
 function openRollModal() {
-  if (rollsLeft <= 0 || !todayDraw) return;
+  if (rollsLeft <= 0 || !todayDraw) {
+    toast('Sem trocas restantes hoje.', 2000); return;
+  }
 
-  /* Gera 3 novas atividades que não estejam no sorteio atual */
-  var current = todayDraw.habits;
-  var pool = HABITS_DB.filter(function(h){ return current.indexOf(h) < 0; });
-  rollNewHabits  = shuffle(pool).slice(0, 3);
-  rollSelections = [];
+  /* Verifica se há atividades não concluídas para trocar */
+  var hasPending = todayDraw.completed.some(function(done){ return !done; });
+  if (!hasPending) {
+    toast('Todas as atividades já foram concluídas!', 2500); return;
+  }
 
-  var opts = qs('#roll-options');
+  var current   = todayDraw.habits;
+  var pool      = HABITS_DB.filter(function(h){ return current.indexOf(h) < 0; });
+  rollNewHabits = shuffle(pool).slice(0, 3);
+  rollPickedNew = -1;
+  rollPickedCurrent = -1;
+
+  renderRollStep1();
+  qs('#roll-bg').classList.add('open');
+}
+
+function renderRollStep1() {
+  qs('#roll-step-1').style.display = '';
+  qs('#roll-step-2').style.display = 'none';
+  qs('#roll-back').style.display   = 'none';
+  qs('#rstep-1').classList.add('active');
+  qs('#rstep-2').classList.remove('active');
+
+  var btn = qs('#roll-confirm');
+  btn.textContent = 'Próximo →';
+  btn.disabled    = true;
+
+  qs('#roll-sub-1').textContent = 'Trocas restantes hoje: ' + rollsLeft;
+
+  var opts = qs('#roll-new-options');
   opts.innerHTML = '';
   rollNewHabits.forEach(function(h, i) {
     var div = document.createElement('div');
     div.className = 'roll-option';
-    div.id = 'ropt-' + i;
+    div.id = 'rnew-' + i;
     div.innerHTML =
       '<div class="roll-option-chk">&#10003;</div>'+
       '<div class="roll-option-txt">'+h+'</div>';
-    div.onclick = function(){ toggleRollOption(i); };
+    div.onclick = function(){ pickNewHabit(i); };
+    opts.appendChild(div);
+  });
+}
+
+function pickNewHabit(i) {
+  /* Seleção única */
+  rollNewHabits.forEach(function(_, j){
+    var el = qs('#rnew-'+j);
+    if (el) el.classList.remove('selected');
+  });
+  rollPickedNew = i;
+  qs('#rnew-'+i).classList.add('selected');
+  qs('#roll-confirm').disabled = false;
+}
+
+function renderRollStep2() {
+  qs('#roll-step-1').style.display = 'none';
+  qs('#roll-step-2').style.display = '';
+  qs('#roll-back').style.display   = '';
+  qs('#rstep-1').classList.remove('active');
+  qs('#rstep-2').classList.add('active');
+
+  var btn = qs('#roll-confirm');
+  btn.textContent = 'Confirmar troca';
+  btn.disabled    = true;
+
+  var newHabit = rollNewHabits[rollPickedNew];
+  qs('#roll-sub-2').textContent = '“' + newHabit + '”';
+
+  var opts = qs('#roll-current-options');
+  opts.innerHTML = '';
+  var hasPending = false;
+
+  todayDraw.habits.forEach(function(h, i) {
+    if (todayDraw.completed[i]) return; /* só mostra as não concluídas */
+    hasPending = true;
+    var div = document.createElement('div');
+    div.className = 'roll-option';
+    div.id = 'rcur-' + i;
+    div.innerHTML =
+      '<div class="roll-option-chk">&#8651;</div>'+
+      '<div class="roll-option-txt">'+h+'</div>'+
+      '<div class="roll-option-sub">'+getHabitLabel(i)+'</div>';
+    div.onclick = function(){ pickCurrentHabit(i); };
     opts.appendChild(div);
   });
 
-  qs('#roll-sel-count').textContent = '0';
-  qs('#roll-confirm').disabled = true;
-  qs('#roll-sheet-sub').textContent = 'Selecione até 2 para trocar com as suas (' + rollsLeft + ' roll(s) restante(s))';
-  qs('#roll-bg').classList.add('open');
-}
-
-function toggleRollOption(i) {
-  var idx = rollSelections.indexOf(i);
-  if (idx >= 0) {
-    rollSelections.splice(idx, 1);
-    qs('#ropt-'+i).classList.remove('selected');
-  } else {
-    if (rollSelections.length >= 2) {
-      toast('Máximo de 2 atividades por roll.', 2000);
-      return;
-    }
-    rollSelections.push(i);
-    qs('#ropt-'+i).classList.add('selected');
+  if (!hasPending) {
+    opts.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt3);font-size:13px">Todas as atividades já concluídas!</div>';
   }
-  qs('#roll-sel-count').textContent = rollSelections.length;
-  qs('#roll-confirm').disabled = rollSelections.length === 0;
 }
 
-function confirmRoll() {
-  if (rollSelections.length === 0 || !todayDraw) return;
-
-  /* Troca as atividades: substituir pelas not-done e nos mesmos slots */
-  var notDoneIdx = [];
-  todayDraw.completed.forEach(function(done, i){
-    if (!done) notDoneIdx.push(i);
+function pickCurrentHabit(i) {
+  todayDraw.habits.forEach(function(_, j){
+    var el = qs('#rcur-'+j);
+    if (el) el.classList.remove('selected');
   });
+  rollPickedCurrent = i;
+  qs('#rcur-'+i).classList.add('selected');
+  qs('#roll-confirm').disabled = false;
+}
 
-  /* Usa os slots não concluídos disponíveis */
-  rollSelections.forEach(function(selIdx, k) {
-    if (k < notDoneIdx.length) {
-      todayDraw.habits[notDoneIdx[k]] = rollNewHabits[selIdx];
-    }
-  });
+/* ── Avança entre etapas ── */
+function rollNext() {
+  var step1 = qs('#roll-step-1');
+  if (step1.style.display !== 'none') {
+    /* Etapa 1 → 2 */
+    if (rollPickedNew < 0) return;
+    renderRollStep2();
+  } else {
+    /* Etapa 2 → Confirmar troca */
+    if (rollPickedCurrent < 0) return;
+    todayDraw.habits[rollPickedCurrent] = rollNewHabits[rollPickedNew];
+    try { sessionStorage.setItem("draw_"+today(), JSON.stringify(todayDraw)); } catch(e){}
 
-  try { sessionStorage.setItem("draw_"+today(), JSON.stringify(todayDraw)); } catch(e){}
+    rollsLeft = Math.max(0, rollsLeft - 1);
+    saveRollsLeft();
+    updateRollBtn();
+    closeRollModal();
+    showHabits();
+    toast('&#127922; Troca feita! Trocas restantes: ' + rollsLeft, 3000);
+  }
+}
 
-  rollsLeft = Math.max(0, rollsLeft - 1);
-  saveRollsLeft();
-  updateRollBtn();
-  closeRollModal();
-  showHabits();
-  toast('&#127922; Atividade(s) trocada(s)! Roll(s) restante(s): ' + rollsLeft, 3000);
+/* Volta para etapa 1 */
+function rollGoBack() {
+  rollPickedCurrent = -1;
+  renderRollStep1();
 }
 
 function closeRollModal() {
   qs('#roll-bg').classList.remove('open');
+  rollPickedNew     = -1;
+  rollPickedCurrent = -1;
 }
 
 function handleRollBg(e) {
   if (e.target === qs('#roll-bg')) closeRollModal();
 }
-
-/* Chama loadRollsLeft após mostrar os hábitos */
-var _origShowHabitsEnd = null; /* patch pós-showHabits */
 
 /* ══════════════════════════════════════════
    VICTORY ANIMATION

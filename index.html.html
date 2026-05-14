@@ -56,19 +56,53 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 
 /* ── APP SHELL ────────────────────────────── */
 #app{position:fixed;inset:0;display:none;flex-direction:column;max-width:430px;margin:0 auto;background:var(--bg);overflow:hidden}
-#top-bar{flex-shrink:0;height:var(--top-h);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);z-index:20}
-.logo{display:flex;align-items:center;gap:9px}
-.logo-icon{width:30px;height:30px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-icon svg{width:16px;height:16px}
-.logo-texts{display:flex;flex-direction:column}
-.logo-name{font-size:16px;font-weight:800;letter-spacing:-.4px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
-.logo-squad-tag{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.04em}
-.top-user-wrap{display:flex;align-items:center;gap:8px}
-.top-username{font-size:12px;font-weight:600;color:var(--txt2)}
-.top-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;border:1.5px solid rgba(255,255,255,.1)}
+/* TOP BAR — 3 colunas: avatar | nome squad centralizado | logo app */
+#top-bar{
+  flex-shrink:0;height:var(--top-h);
+  display:grid;grid-template-columns:52px 1fr 52px;
+  align-items:center;padding:0 14px;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);z-index:20;
+}
+.tb-left{display:flex;align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.top-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;border:1.5px solid rgba(255,255,255,.1);background-size:cover;background-position:center}
+.top-username{font-size:10px;font-weight:600;color:var(--txt3);display:none}
+
+/* Squad identity — centro */
+.tb-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.squad-name-tb{font-size:20px;font-weight:900;letter-spacing:-.5px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.squad-sub-tb{font-size:9px;font-weight:600;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+
+/* Squad logo (direita) — clicável só pelo dono */
+.tb-right{display:flex;align-items:center;justify-content:flex-end}
+.squad-logo-wrap{position:relative;cursor:default;display:inline-flex;-webkit-tap-highlight-color:transparent}
+.squad-logo-wrap.owner{cursor:pointer}
+.squad-logo{
+  width:34px;height:34px;border-radius:10px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  background-size:cover;background-position:center;overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.08);
+  transition:border-color .2s;
+}
+.squad-logo-wrap.owner:hover .squad-logo,.squad-logo-wrap.owner:active .squad-logo{border-color:rgba(255,255,255,.3)}
+.squad-logo svg{width:17px;height:17px;flex-shrink:0}
+.squad-cam-badge{
+  position:absolute;bottom:-3px;right:-4px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--purple);
+  display:none;align-items:center;justify-content:center;
+  border:1.5px solid var(--bg);
+}
+.squad-logo-wrap.owner .squad-cam-badge{display:flex}
+.squad-cam-badge svg{width:9px;height:9px}
+
+/* Tie badge no ranking */
+.tie-badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:100px;font-size:9px;font-weight:800;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.22);color:var(--cyan);margin-left:5px;vertical-align:middle}
+.rk-pos.tie{color:var(--cyan);font-weight:900}
 
 #content{flex:1;overflow:hidden;position:relative}
-.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h)+44px);display:none}
+.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + 110px);display:none}
 .view.active{display:block}
 .view::-webkit-scrollbar{display:none}
 
@@ -137,6 +171,21 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 @keyframes firepop{0%{transform:scale(1)}40%{transform:scale(1.7)}70%{transform:scale(.85)}100%{transform:scale(1)}}
 .prov-btn{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--txt2);transition:all .2s;margin-left:auto}
 .prov-btn:hover,.prov-btn:active{background:var(--pdim);border-color:rgba(124,58,237,.3);color:var(--purple)}
+
+/* ── APROVADO SYSTEM ──────────────────────── */
+.card-approvals{padding:8px 14px 12px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.approve-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;background:var(--bg3);border:1px solid var(--line2);border-radius:100px;color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.approve-btn:hover:not(:disabled):not(.approved):not(.full){background:var(--gdim);border-color:rgba(16,185,129,.3);color:var(--green)}
+.approve-btn.approved{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.28);color:var(--green);pointer-events:none}
+.approve-btn.full{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:#fbbf24;pointer-events:none}
+.approve-btn:active:not(:disabled){transform:scale(.97)}
+.approve-count{font-size:10px;opacity:.65}
+.own-approval-wrap{flex:1;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--txt3)}
+.own-approval-full{color:#fbbf24;font-weight:700;font-size:11px;display:flex;align-items:center;gap:4px}
+
+/* Bonus banner no topo da Roleta */
+.bonus-banner{width:100%;max-width:320px;display:none;align-items:center;justify-content:center;gap:8px;padding:9px 16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:12px;font-size:12px;font-weight:600;color:#fbbf24;margin-bottom:4px;text-align:center;line-height:1.4}
+.bonus-banner.show{display:flex}
 
 /* ── ROLETA ───────────────────────────────── */
 .roleta-inner{display:flex;flex-direction:column;align-items:center;padding:28px 16px 0}
@@ -232,22 +281,60 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 /* ── PROFILE ──────────────────────────────── */
 .prof-inner{padding:22px 16px 0}
 .prof-hdr{display:flex;align-items:center;gap:18px;margin-bottom:14px}
-.prof-av-xl{width:78px;height:78px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;border:2px solid var(--line2)}
+
+/* Avatar clicável para upload de foto */
+.prof-av-wrap{position:relative;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.prof-av-xl{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;border:2.5px solid var(--line2);background-size:cover;background-position:center;transition:border-color .2s}
+.prof-av-wrap:hover .prof-av-xl,.prof-av-wrap:active .prof-av-xl{border-color:var(--purple)}
+.prof-av-cam{position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.prof-av-cam svg{width:13px;height:13px}
+
 .prof-stats{display:flex;flex:1}
 .pstat{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
 .pstat-n{font-size:19px;font-weight:800}
-.pstat-l{font-size:10.5px;color:var(--txt2);text-align:center}
-.prof-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.pstat-l{font-size:10px;color:var(--txt2);text-align:center;line-height:1.3}
+.prof-name-wrap{margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.prof-name{font-size:15px;font-weight:700}
+.prof-name-edit{background:none;border:none;color:var(--txt3);padding:2px;cursor:pointer;display:flex;align-items:center;transition:color .2s}
+.prof-name-edit:hover{color:var(--purple)}
 .prof-bio{font-size:13px;color:var(--txt2);line-height:1.5;margin-bottom:12px}
 .prof-squad-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;font-size:13px;font-weight:600;color:var(--purple);margin-bottom:14px}
 .prof-btns{display:flex;gap:8px;margin-bottom:14px}
 .prof-btn{flex:1;padding:9px;border-radius:10px;background:var(--bg3);border:1px solid var(--line2);color:var(--txt);font-size:13px;font-weight:600;text-align:center;transition:background .15s}
 .prof-btn:active{background:var(--line2)}
-.prof-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:3px}
-.prof-tab{flex:1;padding:12px;text-align:center;font-size:17px;color:var(--txt3);border-bottom:1.5px solid transparent;transition:all .2s;cursor:pointer}
-.prof-tab.active{color:var(--txt);border-bottom-color:var(--txt)}
+/* Label divisória de seção */
+.prof-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin:16px 0 10px;display:flex;align-items:center;gap:8px}
+.prof-section-label::before,.prof-section-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* Grid de atividades */
 .prof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-.prof-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
+.prof-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;background-size:cover;background-position:center;position:relative;cursor:pointer}
+.prof-cell-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;display:flex;align-items:flex-end;padding:6px}
+.prof-cell:hover .prof-cell-overlay,.prof-cell:active .prof-cell-overlay{background:rgba(0,0,0,.45)}
+.prof-cell-habit{font-size:9px;font-weight:600;color:rgba(255,255,255,0);line-height:1.3;transition:color .2s}
+.prof-cell:hover .prof-cell-habit,.prof-cell:active .prof-cell-habit{color:#fff}
+
+/* Lista de atividades (tab alternativa) */
+.prof-activity-list{display:flex;flex-direction:column;gap:10px;padding:12px 0}
+.prof-activity-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg2);border:1px solid var(--line2);border-radius:14px}
+.prof-activity-thumb{width:48px;height:48px;border-radius:10px;flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:20px}
+.prof-activity-info{flex:1;min-width:0}
+.prof-activity-habit{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.prof-activity-time{font-size:11px;color:var(--txt3)}
+.prof-activity-approved{font-size:10px;color:var(--green);font-weight:600}
+
+/* Estado vazio do perfil */
+.prof-empty{padding:40px 20px;text-align:center;color:var(--txt3)}
+.prof-empty-icon{font-size:36px;margin-bottom:10px}
+.prof-empty-txt{font-size:13px;color:var(--txt2);line-height:1.5}
+
+/* Sheet de edição de perfil */
+#edit-profile-bg{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,0);pointer-events:none;transition:background .3s;display:flex;align-items:flex-end}
+#edit-profile-bg.open{background:rgba(0,0,0,.72);pointer-events:all}
+#edit-profile-sheet{width:100%;max-width:430px;margin:0 auto;background:var(--bg1);border:1px solid var(--line2);border-bottom:none;border-radius:26px 26px 0 0;padding:0 18px 48px;transform:translateY(100%);transition:transform .38s cubic-bezier(.22,1,.36,1)}
+#edit-profile-bg.open #edit-profile-sheet{transform:translateY(0)}
+.edit-sheet-title{font-size:17px;font-weight:800;margin-bottom:20px}
+.char-count{font-size:10px;color:var(--txt3);text-align:right;margin-top:4px}
 
 /* ── BOTTOM SHEET ─────────────────────────── */
 #sheet-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0);pointer-events:none;transition:background .3s;display:flex;align-items:flex-end}
@@ -304,6 +391,142 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
 .pt{position:fixed;pointer-events:none;border-radius:50%;z-index:9999;animation:ptf var(--d,.7s) ease-out var(--dl,0s) forwards}
 @keyframes ptf{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+
+/* ── RESET HABIT ──────────────────────────── */
+.reset-btn{
+  display:none;align-items:center;gap:4px;
+  padding:5px 10px;border-radius:8px;flex-shrink:0;
+  background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);
+  color:var(--rose);font-size:11px;font-weight:700;cursor:pointer;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.reset-btn:hover{background:rgba(244,63,94,.18)}
+.habit-card.done .reset-btn{display:inline-flex}
+
+/* ── ROLL BUTTON ──────────────────────────── */
+.roll-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0 4px;
+}
+.roll-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 16px;border-radius:12px;
+  background:var(--bg3);border:1px solid var(--line2);
+  color:var(--txt);font-size:13px;font-weight:600;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.roll-btn:hover:not(:disabled){border-color:rgba(124,58,237,.35);color:var(--purple);background:var(--pdim)}
+.roll-btn:disabled{opacity:.38;pointer-events:none}
+.roll-badge{
+  min-width:18px;height:18px;padding:0 4px;border-radius:100px;
+  background:var(--purple);color:#fff;
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.roll-badge.zero{background:var(--txt3)}
+
+/* ── ROLL MODAL ───────────────────────────── */
+#roll-bg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0);pointer-events:none;transition:background .3s;display:flex;align-items:flex-end}
+#roll-bg.open{background:rgba(0,0,0,.75);pointer-events:all}
+#roll-sheet{
+  width:100%;max-width:430px;margin:0 auto;
+  background:var(--bg1);border:1px solid var(--line2);
+  border-bottom:none;border-radius:26px 26px 0 0;
+  padding:0 18px 44px;
+  transform:translateY(100%);
+  transition:transform .38s cubic-bezier(.22,1,.36,1);
+}
+#roll-bg.open #roll-sheet{transform:translateY(0)}
+.roll-sheet-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.roll-sheet-sub{font-size:13px;color:var(--txt2);margin-bottom:18px}
+.roll-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.roll-option{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:var(--bg2);border:2px solid var(--line2);
+  border-radius:14px;cursor:pointer;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.roll-option.selected{border-color:var(--purple);background:var(--pdim)}
+.roll-option-chk{
+  width:24px;height:24px;border-radius:7px;flex-shrink:0;
+  border:2px solid var(--line2);display:flex;align-items:center;
+  justify-content:center;color:transparent;font-size:11px;
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.roll-option.selected .roll-option-chk{background:var(--purple);border-color:var(--purple);color:#fff}
+.roll-option-txt{flex:1;font-size:14px;font-weight:500;color:var(--txt)}
+.roll-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.roll-sel-info{font-size:12px;color:var(--txt2)}
+.roll-sel-info strong{color:var(--purple)}
+.btn-roll-confirm{
+  padding:11px 22px;border-radius:12px;
+  background:var(--grad);color:#fff;
+  font-size:14px;font-weight:700;
+  box-shadow:0 4px 16px rgba(124,58,237,.38);
+  transition:transform .15s,opacity .15s;
+}
+.btn-roll-confirm:disabled{opacity:.4;pointer-events:none}
+.btn-roll-confirm:active{transform:scale(.97)}
+
+/* ── DISAPPROVE ───────────────────────────── */
+.disapprove-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:100px;
+  background:var(--bg3);border:1px solid var(--line2);
+  color:var(--txt2);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.disapprove-btn:hover:not(:disabled):not(.disapp){background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.25);color:var(--rose)}
+.disapprove-btn.disapp{background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.25);color:var(--rose);pointer-events:none}
+
+/* ── VICTORY OVERLAY ──────────────────────── */
+#victory-overlay{
+  position:fixed;inset:0;z-index:700;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:32px 24px;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+#victory-overlay.show{
+  display:flex;
+  animation:victoryIn .4s ease forwards;
+}
+@keyframes victoryIn{from{opacity:0}to{opacity:1}}
+.victory-trophy{font-size:84px;margin-bottom:12px;animation:tropBounce .7s cubic-bezier(.34,1.56,.64,1) .15s both;display:block}
+@keyframes tropBounce{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0deg)}}
+.victory-title{
+  font-size:28px;font-weight:900;letter-spacing:-.5px;
+  background:linear-gradient(135deg,#fbbf24,#f97316);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:8px;
+  animation:fadeUp .5s ease .3s both;
+}
+.victory-sub{font-size:15px;color:rgba(255,255,255,.75);margin-bottom:6px;animation:fadeUp .5s ease .4s both}
+.victory-squad{font-size:12px;color:var(--txt3);margin-bottom:32px;animation:fadeUp .5s ease .5s both}
+.victory-members{display:flex;gap:10px;justify-content:center;margin-bottom:32px;animation:fadeUp .5s ease .55s both}
+.victory-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.2)}
+.btn-victory-close{
+  padding:14px 36px;border-radius:14px;
+  background:linear-gradient(135deg,#fbbf24,#f97316);
+  color:#000;font-size:15px;font-weight:800;
+  box-shadow:0 6px 24px rgba(251,191,36,.4);
+  animation:fadeUp .5s ease .6s both;
+  transition:transform .15s;
+}
+.btn-victory-close:active{transform:scale(.97)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Confete */
+.confetti-piece{
+  position:fixed;pointer-events:none;z-index:701;
+  animation:confettiFall var(--cdur,2s) ease-in var(--cdly,0s) forwards;
+}
+@keyframes confettiFall{
+  0%  {transform:translateY(-10px) rotate(0deg);opacity:1}
+  100%{transform:translateY(105vh) rotate(var(--crot,720deg));opacity:0}
+}
 </style>
 </head>
 <body>
@@ -349,19 +572,36 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 <!-- APP -->
 <div id="app">
   <header id="top-bar">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div class="logo-texts">
-        <span class="logo-name">HealthSquad</span>
-        <span class="logo-squad-tag">Squad: Rodeio</span>
-      </div>
-    </div>
-    <div class="top-user-wrap">
-      <span class="top-username" id="top-uname"></span>
+
+    <!-- Esquerda: avatar do usuário (atalho para o perfil) -->
+    <div class="tb-left" onclick="goView('profile', document.getElementById('fn-profile'))">
       <div class="top-av" id="top-av">VC</div>
     </div>
+
+    <!-- Centro: nome do Squad em destaque -->
+    <div class="tb-center">
+      <div class="squad-name-tb" id="squad-name-tb">Rodeio</div>
+      <div class="squad-sub-tb">HealthSquad &bull; Beta</div>
+    </div>
+
+    <!-- Direita: foto do squad (editável pelo dono) -->
+    <div class="tb-right">
+      <label class="squad-logo-wrap" id="squad-logo-wrap">
+        <input type="file" id="squad-photo-input" accept="image/*" style="display:none" onchange="handleSquadPhoto(event)">
+        <div class="squad-logo" id="squad-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="squad-cam-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+      </label>
+    </div>
+
   </header>
 
   <div id="content">
@@ -397,6 +637,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
       <div class="roleta-inner">
         <p class="roleta-lbl" id="roleta-date">hoje</p>
         <h2 class="roleta-title">Missões de Hoje</h2>
+        <!-- Banner de bônus (aparece quando bonusTasks > 0) -->
+        <div class="bonus-banner" id="bonus-banner">
+          &#9889; Bônus ativo: +<span id="bonus-count">0</span> tarefa(s) extra(s) &bull; Total de hoje: <span id="bonus-total">3</span> tarefas
+        </div>
         <div id="spin-state">
           <div class="spin-orb-wrap">
             <div class="spin-ring"></div>
@@ -420,6 +664,13 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
               <div class="pw-track"><div class="pw-fill" id="pw-fill"></div></div>
             </div>
             <div class="pw-count" id="pw-count">0 <small>/ 3</small></div>
+          </div>
+          <!-- Roll / Dado -->
+          <div class="roll-bar">
+            <button class="roll-btn" id="roll-btn" onclick="openRollModal()">
+              &#127922; Trocar atividade
+              <span class="roll-badge" id="roll-badge">2</span>
+            </button>
           </div>
           <div id="habits-list"></div>
         </div>
@@ -447,33 +698,68 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <!-- PROFILE -->
     <section id="view-profile" class="view">
       <div class="prof-inner">
+
+        <!-- Header: avatar + stats -->
         <div class="prof-hdr">
-          <div class="prof-av-xl" id="prof-av">VC</div>
+          <!-- Avatar com upload de foto -->
+          <label class="prof-av-wrap" title="Alterar foto de perfil">
+            <input type="file" id="prof-photo-input" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
+            <div class="prof-av-xl" id="prof-av">VC</div>
+            <div class="prof-av-cam">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+          </label>
+
+          <!-- Stats -->
           <div class="prof-stats">
-            <div class="pstat"><div class="pstat-n" id="pstat-h">0</div><div class="pstat-l">Hábitos</div></div>
-            <div class="pstat"><div class="pstat-n" id="pstat-s">7</div><div class="pstat-l">Dias</div></div>
-            <div class="pstat"><div class="pstat-n" id="pstat-p">0</div><div class="pstat-l">Pontos</div></div>
+            <div class="pstat">
+              <div class="pstat-n" id="pstat-h">0</div>
+              <div class="pstat-l">Hábitos<br>Hoje</div>
+            </div>
+            <div class="pstat">
+              <div class="pstat-n" id="pstat-posts">0</div>
+              <div class="pstat-l">Provas<br>Enviadas</div>
+            </div>
+            <div class="pstat">
+              <div class="pstat-n" id="pstat-b">0</div>
+              <div class="pstat-l">Bônus<br>Ativo</div>
+            </div>
           </div>
         </div>
-        <div class="prof-name" id="prof-name">--</div>
-        <div class="prof-bio">Construindo hábitos, um dia de cada vez &#9889;</div>
+
+        <!-- Nome (clique para editar) -->
+        <div class="prof-name-wrap">
+          <span class="prof-name" id="prof-name">--</span>
+          <button class="prof-name-edit" onclick="openEditProfile()" title="Editar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="prof-bio" id="prof-bio">Construindo hábitos, um dia de cada vez &#9889;</div>
+
+        <!-- Squad tag -->
         <div class="prof-squad-tag">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Squad Rodeio &bull; Beta
         </div>
+
+        <!-- Ações -->
         <div class="prof-btns">
-          <button class="prof-btn">Editar perfil</button>
+          <button class="prof-btn" onclick="openEditProfile()">
+            &#9998; Editar perfil
+          </button>
           <button class="prof-btn" onclick="showInvite()">&#128279; Convidar</button>
         </div>
-        <div class="prof-tabs">
-          <div class="prof-tab active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          </div>
-          <div class="prof-tab">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          </div>
-        </div>
-        <div class="prof-grid" id="prof-grid"></div>
+
+        <!-- Atividades realizadas -->
+        <div class="prof-section-label">Atividades</div>
+        <div id="prof-activity-list"></div>
+
       </div>
     </section>
   </div>
@@ -494,6 +780,29 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
       <div id="fn-av" style="width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background:#7c3aed;border:1.5px solid rgba(255,255,255,.12)">VC</div>
     </button>
   </nav>
+</div>
+
+<!-- EDIT PROFILE SHEET -->
+<div id="edit-profile-bg" onclick="handleEditProfileBg(event)">
+  <div id="edit-profile-sheet">
+    <div class="sheet-handle"></div>
+    <div class="edit-sheet-title">Editar Perfil</div>
+
+    <div class="auth-field">
+      <label>Nome de exibição</label>
+      <input type="text" id="edit-name" placeholder="Como você quer ser chamado?" maxlength="30" oninput="updateCharCount('edit-name','ec-name',30)">
+      <div class="char-count"><span id="ec-name">0</span>/30</div>
+    </div>
+
+    <div class="auth-field">
+      <label>Bio</label>
+      <input type="text" id="edit-bio" placeholder="Uma frase sobre você..." maxlength="80" oninput="updateCharCount('edit-bio','ec-bio',80)">
+      <div class="char-count"><span id="ec-bio">0</span>/80</div>
+    </div>
+
+    <button class="btn-auth primary" style="margin-top:8px" onclick="saveProfileInfo()">Salvar alterações</button>
+    <button class="btn-auth ghost" onclick="closeEditProfile()">Cancelar</button>
+  </div>
 </div>
 
 <!-- BOTTOM SHEET -->
@@ -542,6 +851,30 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <div class="sn-timer" id="sn-timer" style="width:100%"></div>
 </div>
 
+<!-- ROLL MODAL -->
+<div id="roll-bg" onclick="handleRollBg(event)">
+  <div id="roll-sheet">
+    <div class="sheet-handle"></div>
+    <div class="roll-sheet-title">&#127922; Trocar Atividade</div>
+    <div class="roll-sheet-sub" id="roll-sheet-sub">Selecione até 2 para trocar com as suas</div>
+    <div class="roll-options" id="roll-options"></div>
+    <div class="roll-footer">
+      <div class="roll-sel-info">Selecionadas: <strong id="roll-sel-count">0</strong>/2</div>
+      <button class="btn-roll-confirm" id="roll-confirm" onclick="confirmRoll()" disabled>Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- VICTORY OVERLAY -->
+<div id="victory-overlay">
+  <span class="victory-trophy">&#127942;</span>
+  <div class="victory-title" id="victory-title">Missão Cumprida!</div>
+  <div class="victory-sub" id="victory-sub">Você completou todas as atividades de hoje!</div>
+  <div class="victory-squad">Squad Rodeio &bull; HealthSquad</div>
+  <div class="victory-members" id="victory-members"></div>
+  <button class="btn-victory-close" onclick="hideVictory()">Incrível! &#127881;</button>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -574,12 +907,15 @@ var VALID_PASSWORD   = "1234";
 var VALID_SQUAD_CODE = "rodeio";
 
 /* ── SQUAD ────────────────────────────────── */
+/* Pontos apenas reais — sem mock data */
 var SQUAD = [
-  { name:"Arthur",   color:"#7c3aed", dp:0, wp:15 },
-  { name:"Brunna",   color:"#e11d48", dp:2, wp:21 },
-  { name:"Felipe",   color:"#d97706", dp:3, wp:17 },
-  { name:"Izabella", color:"#10b981", dp:1, wp:14 }
+  { name:"Arthur",   color:"#7c3aed", dp:0, wp:0 },
+  { name:"Brunna",   color:"#e11d48", dp:0, wp:0 },
+  { name:"Felipe",   color:"#d97706", dp:0, wp:0 },
+  { name:"Izabella", color:"#10b981", dp:0, wp:0 }
 ];
+/* Dono do Squad — único com permissão de alterar a foto */
+var SQUAD_OWNER = "Arthur";
 
 /* ── HÁBITOS ──────────────────────────────── */
 var HABITS_DB = [
@@ -591,9 +927,21 @@ var HABITS_DB = [
   "Ligar para alguém querido","Aprender algo por 15min","3 séries de agachamento",
   "Notificações off por 2h","Sair de casa por 20 min","Cozinhar refeição saudável",
   "Escrever 3 prioridades","10min sem fazer absolutamente nada","Notícias por máx 10min",
-  "Banho frio pela manhã"
+  "Banho frio pela manhã","Planejar refeições do dia seguinte","Descansar os olhos por 20min",
+  "Listar 3 conquistas do dia","Fazer 20min de exercício intenso","Praticar respiração profunda",
+  "Ler algo inspirador por 10min","Limpar uma gaveta ou área bagunçada",
+  "Escrever sobre seus objetivos","Praticar gratidão antes de dormir",
+  "Desligar celular 1h antes de dormir"
 ];
-var HABIT_LABELS = ["Missão Alpha","Missão Beta","Missão Gamma"];
+
+/* Gera rótulo dinâmico para qualquer índice de missão */
+function getHabitLabel(idx) {
+  var names = ["Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta",
+    "Iota","Kappa","Lambda","Mu","Nu","Xi","Pi","Sigma","Tau","Omega",
+    "Bônus I","Bônus II","Bônus III","Bônus IV","Bônus V","Bônus VI","Bônus VII",
+    "Bônus VIII","Bônus IX","Bônus X","Bônus XI","Bônus XII"];
+  return "Missão " + (names[idx] || (idx+1));
+}
 
 /* ── NOTIFICAÇÕES ─────────────────────────── */
 var SYS_MSGS = [
@@ -620,6 +968,7 @@ var homeNotifTimer  = null;
 var livePosts       = [];
 var liveKudos       = {};
 var firestoreUnsub  = null;
+var bonusTasks      = 0;   /* tarefas bônus do usuário logado (0–27) */
 
 /* ── UTILS ────────────────────────────────── */
 function qs(s)   { return document.querySelector(s); }
@@ -695,16 +1044,38 @@ function doLogin() {
       userDoneToday = userDoneCount > 0;
     }
   } catch(e) {}
-  qs("#top-uname").textContent   = user.name;
-  qs("#top-av").textContent      = initials(user.name);
-  qs("#top-av").style.background = user.color;
-  qs("#fn-av").textContent       = initials(user.name);
-  qs("#fn-av").style.background  = user.color;
+  /* Aplica avatar do usuário na top bar e nav */
+  var savedName = localStorage.getItem('hsname_' + user.name) || user.name;
+  var savedPic  = localStorage.getItem('hsphoto_' + user.name);
+
+  var topAv = qs("#top-av");
+  if (savedPic) {
+    topAv.style.backgroundImage    = 'url(' + savedPic + ')';
+    topAv.style.backgroundSize     = 'cover';
+    topAv.style.backgroundPosition = 'center';
+    topAv.textContent = '';
+  } else {
+    topAv.textContent       = initials(savedName);
+    topAv.style.background  = user.color;
+  }
+
+  var fnAv = qs("#fn-av");
+  if (savedPic) {
+    fnAv.style.backgroundImage    = 'url(' + savedPic + ')';
+    fnAv.style.backgroundSize     = 'cover';
+    fnAv.style.backgroundPosition = 'center';
+    fnAv.textContent = '';
+  } else {
+    fnAv.textContent      = initials(savedName);
+    fnAv.style.background = user.color;
+  }
   qs("#auth-screen").style.display = "none";
   qs("#app").style.display         = "flex";
   setDates();
   updateEnergy();
   setupRealtimeFeed();
+  loadBonusState();
+  initSquadPhoto();      /* aplica foto do squad e permissão de dono */
   initRoleta();
   renderRanking();
   renderProfile();
@@ -756,7 +1127,7 @@ function setupRealtimeFeed() {
     function(snapshot) {
       livePosts = snapshot.docs.map(function(doc){
         var d = doc.data();
-        return { id:doc.id, name:d.userName||"Membro", color:getMemberColor(d.userName), habit:d.habitText||"", photo:d.imageUrl||null, ts:d.timestamp||null };
+        return { id:doc.id, name:d.userName||"Membro", color:getMemberColor(d.userName), habit:d.habitText||"", photo:d.imageUrl||null, ts:d.timestamp||null, approvals:d.approvals||[], disapprovals:d.disapprovals||[], bonusGranted:d.bonusGranted||false };
       });
       renderLiveFeed();
     },
@@ -784,6 +1155,21 @@ function renderLiveFeed() {
     return;
   }
   livePosts.forEach(function(p){ list.appendChild(buildLiveCard(p)); });
+
+  /* Detecta posts recém-aprovados por todos e concede bônus ao autor */
+  var needed = SQUAD.length - 1; /* 3: todos exceto o próprio autor */
+  livePosts.forEach(function(p){
+    if (p.approvals.length >= needed && !p.bonusGranted) {
+      /* Marca no Firestore para não conceder duas vezes */
+      db.collection("posts").doc(p.id).update({ bonusGranted: true });
+      /* Enfileira bônus para o autor */
+      db.collection("userBonus").doc(p.name).set({ pendingBonus: true }, { merge: true });
+      /* Notifica apenas quem está logado e não é o autor */
+      if (currentUser && p.name !== currentUser.name) {
+        toast("&#127942; "+p.name+" recebeu aprovação total! Bônus garantido amanhã.", 4500);
+      }
+    }
+  });
 }
 
 function buildLiveCard(p) {
@@ -796,6 +1182,44 @@ function buildLiveCard(p) {
   } else {
     photoHTML = '<div class="card-photo-placeholder'+(blurred?" blurred":"")+'" style="background:linear-gradient(150deg,#1a0a2e,#2d1b69)">&#9889;</div>';
   }
+
+  /* Seção de aprovações + reprovações */
+  var needed         = SQUAD.length - 1;
+  var approvalCount  = p.approvals.length;
+  var isFull         = approvalCount >= needed;
+  var iApproved      = currentUser && p.approvals.indexOf(currentUser.name) >= 0;
+  var iDisapproved   = currentUser && (p.disapprovals||[]).indexOf(currentUser.name) >= 0;
+  var disapprCount   = (p.disapprovals||[]).length;
+  var approvalSection = '';
+
+  if (!isMe) {
+    var appCls = 'approve-btn' + (isFull ? ' full' : (iApproved ? ' approved' : ''));
+    var appTxt = isFull
+      ? '&#127942; Todos aprovaram!'
+      : (iApproved ? '&#10003; Aprovado' : '&#10003; Aprovar');
+    var dispCls = 'disapprove-btn' + (iDisapproved ? ' disapp' : '');
+    approvalSection =
+      '<div class="card-approvals">'+
+        '<button class="'+appCls+'" onclick="approvePost(event,\''+p.id+'\')"'+
+          (iApproved||isFull?' disabled':'')+'>'+
+          appTxt+' <span class="approve-count">'+approvalCount+'/'+needed+'</span>'+
+        '</button>'+
+        '<button class="'+dispCls+'" onclick="disapprovePost(event,\''+p.id+'\')"'+
+          (iDisapproved?' disabled':'')+'>'+
+          '&#10007; Reprovar'+(disapprCount>0?' <span class="approve-count">'+disapprCount+'</span>':'')+
+        '</button>'+
+      '</div>';
+  } else {
+    approvalSection =
+      '<div class="card-approvals">'+
+        '<div class="own-approval-wrap">'+
+          '<span>&#11088; Aprovações: '+approvalCount+'/'+needed+'</span>'+
+          (isFull ? '<span class="own-approval-full">&#127881; Bônus garantido!</span>' : '')+
+          (disapprCount>0 ? '<span style="font-size:11px;color:var(--rose)">&#10007; '+disapprCount+' reprovação(ões)</span>' : '')+
+        '</div>'+
+      '</div>';
+  }
+
   var card = document.createElement("div");
   card.className = "feed-card";
   card.dataset.postId = p.id;
@@ -824,7 +1248,8 @@ function buildLiveCard(p) {
       '<button class="prov-btn" onclick="openSheetDirect(event,\''+p.name+'\',\''+p.color+'\')">'+
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'+
       '</button>'+
-    '</div>';
+    '</div>'+
+    approvalSection;
   return card;
 }
 
@@ -884,7 +1309,9 @@ function showSpinHero() {
 }
 function startSpin() {
   qs("#btn-spin").disabled=true;
-  var picked=shuffle(HABITS_DB).slice(0,3);
+  victoryShown = false;   /* permite nova animação de vitória */
+  var totalToday = 3 + bonusTasks;
+  var picked = shuffle(HABITS_DB).slice(0, totalToday);
   var hero=qs("#spin-state");
   hero.style.transition="opacity .28s"; hero.style.opacity="0";
   setTimeout(function(){
@@ -897,7 +1324,9 @@ function startSpin() {
       animSlot(qs("#st-"+i),qs("#sr-"+i),habit,durs[i],function(){
         if(++locked<3) return;
         setTimeout(function(){
-          todayDraw={habits:picked,completed:[false,false,false],photos:[null,null,null]};
+          var falseArr = picked.map(function(){ return false; });
+          var nullArr  = picked.map(function(){ return null; });
+          todayDraw={habits:picked,completed:falseArr,photos:nullArr};
           try{ sessionStorage.setItem("draw_"+today(),JSON.stringify(todayDraw)); }catch(e){}
           sec.style.transition="opacity .28s"; sec.style.opacity="0";
           setTimeout(function(){ sec.classList.remove("show","vis"); sec.style.opacity=""; showHabits(); },300);
@@ -937,18 +1366,20 @@ function showHabits(){
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'+
       '</div>'+
       '<div class="hc-body">'+
-        '<div class="hc-lbl">'+HABIT_LABELS[i]+'</div>'+
+        '<div class="hc-lbl">'+getHabitLabel(i)+'</div>'+
         '<div class="hc-txt">'+h+'</div>'+
       '</div>'+
       '<label class="proof-lbl'+(sent?" sent":"") +'" id="plbl-'+i+'">'+
         '<input type="file" accept="image/*" capture="environment" onchange="handleProof(event,'+i+')">'+
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'+
         '<span>'+(sent?"Enviado ✓":"Comprovar")+'</span>'+
-      '</label>';
+      '</label>'+
+      '<button class="reset-btn" onclick="resetHabit('+i+')">&#8635; Refazer</button>';
     list.appendChild(row);
   });
   qs("#habits-sec").classList.add("show");
   updateProgBar();
+  loadRollsLeft();   /* atualiza o botão de roll após mostrar hábitos */
 }
 function checkHabit(idx){ if(!todayDraw||todayDraw.completed[idx]) return; markDone(idx); }
 function markDone(idx){
@@ -971,9 +1402,15 @@ function markDone(idx){
 }
 function updateProgBar(){
   if(!todayDraw) return;
-  var n=todayDraw.completed.filter(Boolean).length;
-  qs("#pw-fill").style.width=(n/3*100)+"%";
-  qs("#pw-count").innerHTML=n+' <small>/ 3</small>';
+  var total = todayDraw.habits.length;   /* dinâmico: 3 + bônus */
+  var n     = todayDraw.completed.filter(Boolean).length;
+  qs("#pw-fill").style.width = (n/total*100)+"%";
+  qs("#pw-count").innerHTML  = n+' <small>/ '+total+'</small>';
+  /* Salva conclusão total no Firestore para lógica do próximo dia */
+  if (n >= total && total > 0) {
+    saveDayCompletion(true);
+    checkVictory();
+  }
 }
 
 /* ── UPLOAD ImgBB + FIRESTORE ─────────────── */
@@ -994,10 +1431,13 @@ function handleProof(e, idx){
       if(!data.success) throw new Error("ImgBB: "+JSON.stringify(data.error));
       var imageUrl=data.data.url;
       return db.collection("posts").add({
-        userName:  currentUser.name,
-        habitText: habit,
-        imageUrl:  imageUrl,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        userName:     currentUser.name,
+        habitText:    habit,
+        imageUrl:     imageUrl,
+        timestamp:    firebase.firestore.FieldValue.serverTimestamp(),
+        approvals:    [],
+        disapprovals: [],
+        bonusGranted: false
       });
     })
     .then(function(){
@@ -1026,53 +1466,289 @@ function switchPeriod(p,btn){
   });
   renderRanking();
 }
-function renderRanking(){
-  var list=SQUAD.map(function(m){
-    return { uid:m.uid,name:m.name,color:m.color,
-      pts:m.uid==="u-me"?(rankPeriod==="daily"?userDoneCount:m.wp+userDoneCount):(rankPeriod==="daily"?m.dp:m.wp) };
-  }).sort(function(a,b){ return b.pts-a.pts; });
-  var pod=qs("#podium"); pod.innerHTML="";
-  if(list.length>=3){
-    var order=[list[1],list[0],list[2]],cls=["pod-2","pod-1","pod-3"],med=["&#129695;","&#128081;","&#129352;"];
-    order.forEach(function(m,i){
-      var col=document.createElement("div"); col.className="pod-col "+cls[i];
-      col.innerHTML=(cls[i]==="pod-1"?'<div style="font-size:16px">&#128081;</div>':"")+
+function renderRanking() {
+  /* Monta lista com pontos reais */
+  var list = SQUAD.map(function(m) {
+    var pts = (m.uid === "u-me")
+      ? (rankPeriod === "daily" ? userDoneCount : m.wp + userDoneCount)
+      : (rankPeriod === "daily" ? m.dp : m.wp);
+    return { uid:m.uid, name:m.name, color:m.color, pts:pts };
+  }).sort(function(a,b){ return b.pts - a.pts; });
+
+  /* Calcula posições com empate */
+  var positions = [];
+  list.forEach(function(m, i) {
+    if (i === 0) {
+      positions.push(1);
+    } else if (m.pts === list[i-1].pts) {
+      positions.push(positions[i-1]);   /* mesma posição = empate */
+    } else {
+      positions.push(i + 1);
+    }
+  });
+  /* Marca quem realmente está empatado (>=2 com a mesma posição) */
+  var posCount = {};
+  positions.forEach(function(p){ posCount[p] = (posCount[p]||0)+1; });
+
+  /* ── Pódio ── */
+  var pod = qs("#podium");
+  pod.innerHTML = "";
+  var hasPoints = list.some(function(m){ return m.pts > 0; });
+
+  if (hasPoints && list.length >= 3) {
+    /* Top 3 sem empate perfeito: exibe pódio normal */
+    var order  = [list[1], list[0], list[2]];
+    var cls    = ["pod-2","pod-1","pod-3"];
+    var medals = ["&#129695;","&#128081;","&#129352;"];
+    order.forEach(function(m, i) {
+      var col = document.createElement("div");
+      col.className = "pod-col " + cls[i];
+      col.innerHTML =
+        (cls[i]==="pod-1" ? '<div style="font-size:16px">&#128081;</div>' : '') +
         '<div class="pod-av" style="background:'+m.color+'">'+initials(m.name)+'</div>'+
         '<div class="pod-name">'+m.name+'</div>'+
         '<div class="pod-pts">'+m.pts+' pts</div>'+
-        '<div class="pod-base">'+med[i]+'</div>';
+        '<div class="pod-base">'+medals[i]+'</div>';
       pod.appendChild(col);
     });
+  } else {
+    pod.innerHTML =
+      '<div style="text-align:center;padding:20px 10px;color:var(--txt3);font-size:13px">'+
+        '&#9889; Realize hábitos para aparecer no ranking'+
+      '</div>';
   }
-  var rkl=qs("#rk-list"); rkl.innerHTML="";
-  list.forEach(function(m,i){
-    var row=document.createElement("div");
-    row.className="rk-row"+(m.uid==="u-me"?" me":"");
-    row.style.animationDelay=(i*.07)+"s";
-    row.innerHTML=
-      '<div class="rk-pos">'+(i+1)+'</div>'+
+
+  /* ── Lista completa com indicador de empate ── */
+  var rkl = qs("#rk-list");
+  rkl.innerHTML = "";
+  list.forEach(function(m, i) {
+    var pos    = positions[i];
+    var isTied = posCount[pos] > 1;
+    var row    = document.createElement("div");
+    row.className = "rk-row" + (m.uid === "u-me" ? " me" : "");
+    row.style.animationDelay = (i * .07) + "s";
+    row.innerHTML =
+      '<div class="rk-pos'+(isTied?" tie":"")+'">' + (isTied ? "=" : "") + pos + '</div>'+
       '<div class="rk-av" style="background:'+m.color+'">'+initials(m.name)+'</div>'+
-      '<div class="rk-info"><div class="rk-name">'+m.name+(m.uid==="u-me"?' <span style="font-size:10px;color:#7c3aed">(você)</span>':'')+
-      '</div><div class="rk-sub">'+(rankPeriod==="daily"?"hábitos hoje":"pts semana")+'</div></div>'+
+      '<div class="rk-info">'+
+        '<div class="rk-name">'+m.name+
+          (m.uid==="u-me" ? ' <span style="font-size:10px;color:#7c3aed">(você)</span>' : '')+
+          (isTied ? ' <span class="tie-badge">Empate</span>' : '')+
+        '</div>'+
+        '<div class="rk-sub">'+(rankPeriod==="daily"?"hábitos hoje":"pts semana")+'</div>'+
+      '</div>'+
       '<div class="rk-pts">'+m.pts+'</div>';
     rkl.appendChild(row);
   });
 }
 
-/* ── PERFIL ───────────────────────────────── */
-function renderProfile(){
-  if(!currentUser) return;
-  qs("#prof-name").textContent   = currentUser.name;
-  qs("#prof-av").textContent     = initials(currentUser.name);
-  qs("#prof-av").style.background= currentUser.color;
-  qs("#pstat-h").textContent     = userDoneCount;
-  qs("#pstat-p").textContent     = userDoneCount*10;
-  var grid=qs("#prof-grid"); grid.innerHTML="";
-  PROF_BG.forEach(function(bg,i){
-    var c=document.createElement("div"); c.className="prof-cell"; c.style.background=bg;
-    c.innerHTML="<span>"+PROF_EMOJI[i]+"</span>"; grid.appendChild(c);
-  });
+/* ══════════════════════════════════════════
+   PERFIL FUNCIONAL
+══════════════════════════════════════════ */
+
+/* ── Renderização base ── */
+function renderProfile() {
+  if (!currentUser) return;
+
+  var savedName = localStorage.getItem('hsname_' + currentUser.name) || currentUser.name;
+  var savedBio  = localStorage.getItem('hsbio_'  + currentUser.name) || 'Construindo hábitos, um dia de cada vez &#9889;';
+
+  qs("#prof-name").textContent = savedName;
+  qs("#prof-bio").innerHTML    = savedBio;
+  qs("#pstat-h").textContent   = userDoneCount;
+  qs("#pstat-b").textContent   = bonusTasks;
+
+  applyProfileAv(qs("#prof-av"), currentUser);
+  loadUserPosts();
 }
+
+/* Aplica foto ou iniciais em um elemento avatar */
+function applyProfileAv(el, user) {
+  if (!el || !user) return;
+  var stored = localStorage.getItem('hsphoto_' + user.name);
+  if (stored) {
+    el.style.backgroundImage    = 'url(' + stored + ')';
+    el.style.backgroundSize     = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.textContent = '';
+  } else {
+    el.style.backgroundImage = '';
+    el.style.background      = user.color;
+    el.textContent           = initials(user.name);
+  }
+}
+
+/* ── Upload de foto de perfil ── */
+function handleProfilePhoto(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var dataURL = ev.target.result;
+    localStorage.setItem('hsphoto_' + currentUser.name, dataURL);
+
+    /* Aplica no avatar do perfil */
+    applyProfileAv(qs("#prof-av"), currentUser);
+
+    /* Atualiza avatar pequeno na nav */
+    var fnAv = qs('#fn-av');
+    if (fnAv) {
+      fnAv.style.backgroundImage    = 'url(' + dataURL + ')';
+      fnAv.style.backgroundSize     = 'cover';
+      fnAv.style.backgroundPosition = 'center';
+      fnAv.textContent = '';
+    }
+
+    toast('&#128247; Foto de perfil atualizada!', 2500);
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+/* ── Editar nome e bio ── */
+function openEditProfile() {
+  var savedName = localStorage.getItem('hsname_' + currentUser.name) || currentUser.name;
+  var savedBio  = localStorage.getItem('hsbio_'  + currentUser.name) || '';
+
+  var nameInput = qs('#edit-name');
+  var bioInput  = qs('#edit-bio');
+  nameInput.value = savedName;
+  bioInput.value  = savedBio;
+  updateCharCount('edit-name', 'ec-name', 30);
+  updateCharCount('edit-bio',  'ec-bio',  80);
+
+  qs('#edit-profile-bg').classList.add('open');
+}
+
+function closeEditProfile() {
+  qs('#edit-profile-bg').classList.remove('open');
+}
+
+function handleEditProfileBg(e) {
+  if (e.target === qs('#edit-profile-bg')) closeEditProfile();
+}
+
+function updateCharCount(inputId, countId, max) {
+  var val = qs('#' + inputId).value.length;
+  qs('#' + countId).textContent = val;
+}
+
+function saveProfileInfo() {
+  var newName = qs('#edit-name').value.trim();
+  var newBio  = qs('#edit-bio').value.trim();
+  if (!newName) { toast('O nome não pode ficar vazio.', 2000); return; }
+
+  localStorage.setItem('hsname_' + currentUser.name, newName);
+  localStorage.setItem('hsbio_'  + currentUser.name, newBio || 'Construindo hábitos, um dia de cada vez &#9889;');
+
+  qs('#prof-name').textContent = newName;
+  qs('#prof-bio').textContent  = newBio || 'Construindo hábitos, um dia de cada vez ⚡';
+  /* Atualiza avatar da top bar com novo nome */
+  var topAv2 = qs('#top-av');
+  if (topAv2 && !localStorage.getItem('hsphoto_' + currentUser.name)) {
+    topAv2.textContent = initials(newName);
+  }
+
+  closeEditProfile();
+  toast('&#10003; Perfil atualizado!', 2500);
+}
+
+/* ── Atividades do usuário (lista única) ── */
+function loadUserPosts() {
+  if (!currentUser) return;
+
+  var container = qs('#prof-activity-list');
+  container.innerHTML =
+    '<div style="padding:24px;text-align:center;font-size:12px;color:var(--txt3)">Carregando...</div>';
+
+  db.collection("posts")
+    .where("userName", "==", currentUser.name)
+    .orderBy("timestamp", "desc")
+    .limit(30)
+    .get()
+    .then(function(snap) {
+      qs('#pstat-posts').textContent = snap.size;
+
+      if (snap.empty) {
+        container.innerHTML =
+          '<div class="prof-empty">'+
+            '<div class="prof-empty-icon">&#128247;</div>'+
+            '<div class="prof-empty-txt">Nenhuma atividade ainda.<br>Sorteie missões e comprove seus hábitos!</div>'+
+          '</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      var needed = SQUAD.length - 1;
+
+      snap.docs.forEach(function(doc) {
+        var d        = doc.data();
+        var approved = (d.approvals || []).length >= needed;
+        var ts       = d.timestamp ? timeAgo(d.timestamp) : 'recente';
+        var item     = document.createElement('div');
+        item.className = 'prof-activity-item';
+
+        var thumbStyle = d.imageUrl
+          ? 'background-image:url('+d.imageUrl+');background-size:cover;background-position:center'
+          : 'background:linear-gradient(135deg,#1a0a2e,#3b0764)';
+
+        item.innerHTML =
+          '<div class="prof-activity-thumb" style="'+thumbStyle+'">'+
+            (d.imageUrl ? '' : '&#9889;')+
+          '</div>'+
+          '<div class="prof-activity-info">'+
+            '<div class="prof-activity-habit">'+(d.habitText||'Hábito')+'</div>'+
+            '<div class="prof-activity-time">'+ts+'</div>'+
+            (approved ? '<div class="prof-activity-approved">&#127942; Aprovado por todos</div>' : '')+
+          '</div>';
+
+        container.appendChild(item);
+      });
+    })
+    .catch(function(err) {
+      console.error('Erro ao carregar atividades:', err);
+      qs('#prof-activity-list').innerHTML =
+        '<div class="prof-empty"><div class="prof-empty-txt">Erro ao carregar atividades.</div></div>';
+    });
+}
+
+/* ── Foto do Squad (apenas dono) ── */
+function handleSquadPhoto(e) {
+  if (!currentUser || currentUser.name !== SQUAD_OWNER) return;
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var dataURL = ev.target.result;
+    localStorage.setItem('hssquad_photo', dataURL);
+    applySquadPhoto(dataURL);
+    toast('&#127759; Foto do Squad atualizada!', 2500);
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function applySquadPhoto(dataURL) {
+  var logo = qs('#squad-logo');
+  if (!logo) return;
+  logo.style.backgroundImage    = 'url(' + dataURL + ')';
+  logo.style.backgroundSize     = 'cover';
+  logo.style.backgroundPosition = 'center';
+  /* Esconde o SVG quando há foto */
+  var svg = logo.querySelector('svg');
+  if (svg) svg.style.display = 'none';
+}
+
+function initSquadPhoto() {
+  var stored = localStorage.getItem('hssquad_photo');
+  if (stored) applySquadPhoto(stored);
+  /* Mostra badge de câmera e habilita clique apenas para o dono */
+  if (currentUser && currentUser.name === SQUAD_OWNER) {
+    var wrap = qs('#squad-logo-wrap');
+    if (wrap) wrap.classList.add('owner');
+  }
+}
+
 function showInvite(){ toast("&#128279; Código do Squad: <strong>Rodeio</strong>",3000); }
 
 /* ── NOTIFICAÇÃO ──────────────────────────── */
@@ -1117,6 +1793,364 @@ function spawnBurst(ox,oy,count){
     el.style.cssText="left:"+ox+"px;top:"+oy+"px;width:"+sz+"px;height:"+sz+"px;background:"+c+";box-shadow:0 0 "+(sz*2)+"px "+c+";--tx:"+Math.cos(ang)*dist+"px;--ty:"+(Math.sin(ang)*dist-22)+"px;--d:"+d+"s;--dl:"+dl+"s;";
     document.body.appendChild(el);
     setTimeout(function(){ this.remove(); }.bind(el),(d+dl)*1000+100);
+  }
+}
+
+/* ══════════════════════════════════════════
+   SISTEMA DE BÔNUS
+   Estrutura Firestore: userBonus/{userName}
+     bonusTasks      : number  (0–27, total = 3+bonus, máx 30)
+     pendingBonus    : boolean (bônus enfileirado para o próximo dia)
+     lastDayChecked  : string  (YYYY-MM-DD da última verificação)
+     lastDayCompleted: boolean (concluiu TODAS as tarefas naquele dia?)
+══════════════════════════════════════════ */
+
+function loadBonusState() {
+  if (!currentUser) return;
+  db.collection("userBonus").doc(currentUser.name).get()
+    .then(function(doc) {
+      var data         = doc.exists ? doc.data() : {};
+      var lastChecked  = data.lastDayChecked  || '';
+      var storedBonus  = data.bonusTasks      || 0;
+      var pending      = data.pendingBonus    || false;
+      var lastDone     = data.lastDayCompleted|| false;
+
+      if (lastChecked !== '' && lastChecked !== today()) {
+        /* ── Virada de dia: processa regras ── */
+        var newBonus  = storedBonus;
+        var newPending = pending;
+
+        if (!lastDone) {
+          /* Não concluiu todas as tarefas: perde todos os bônus */
+          if (storedBonus > 0) {
+            newBonus = 0;
+            setTimeout(function(){
+              toast("&#9888;&#65039; Você não concluiu todas as tarefas de ontem. Bônus revogado! De volta a 3 tarefas/dia.", 5500);
+            }, 2000);
+          }
+          newPending = false; /* bônus pendente também perdido */
+        } else {
+          /* Concluiu tudo: aplica bônus pendente se houver */
+          if (pending) {
+            newBonus   = Math.min(storedBonus + 1, 27); /* 3 + 27 = 30 máx */
+            newPending = false;
+            setTimeout(function(){
+              toast("&#127881; +1 tarefa bônus aplicada! Você agora tem "+(3+newBonus)+" tarefas/dia por 30 dias.", 5000);
+            }, 2000);
+          }
+        }
+
+        bonusTasks = newBonus;
+
+        /* Salva novo estado para o dia de hoje */
+        db.collection("userBonus").doc(currentUser.name).set({
+          bonusTasks:       newBonus,
+          pendingBonus:     newPending,
+          lastDayChecked:   today(),
+          lastDayCompleted: false   /* reseta para o dia novo */
+        });
+
+      } else if (lastChecked === today()) {
+        /* Mesmo dia: apenas carrega */
+        bonusTasks = storedBonus;
+      } else {
+        /* Primeira vez do usuário: inicializa */
+        bonusTasks = 0;
+        db.collection("userBonus").doc(currentUser.name).set({
+          bonusTasks: 0, pendingBonus: false,
+          lastDayChecked: today(), lastDayCompleted: false
+        });
+      }
+
+      updateBonusUI();
+    })
+    .catch(function(err){ console.error("Erro ao carregar bônus:", err); });
+}
+
+function saveDayCompletion(allDone) {
+  if (!currentUser) return;
+  db.collection("userBonus").doc(currentUser.name).set({
+    lastDayCompleted: allDone
+  }, { merge: true });
+}
+
+function updateBonusUI() {
+  var banner = qs("#bonus-banner");
+  if (!banner) return;
+  if (bonusTasks > 0) {
+    banner.classList.add("show");
+    qs("#bonus-count").textContent = bonusTasks;
+    qs("#bonus-total").textContent = 3 + bonusTasks;
+  } else {
+    banner.classList.remove("show");
+  }
+}
+
+/* ══════════════════════════════════════════
+   APROVADO — clique no botão do feed
+══════════════════════════════════════════ */
+function approvePost(e, postId) {
+  e.stopPropagation();
+  if (!currentUser) return;
+
+  var post = livePosts.find(function(p){ return p.id === postId; });
+  if (!post) return;
+
+  /* Não pode aprovar o próprio post */
+  if (post.name === currentUser.name) {
+    toast("Você não pode aprovar sua própria atividade.", 2000);
+    return;
+  }
+
+  /* Já aprovou */
+  if (post.approvals.indexOf(currentUser.name) >= 0) return;
+
+  /* Registra aprovação no Firestore (arrayUnion evita duplicatas) */
+  db.collection("posts").doc(postId).update({
+    approvals: firebase.firestore.FieldValue.arrayUnion(currentUser.name)
+  }).then(function() {
+    var newCount = post.approvals.length + 1;
+    var needed   = SQUAD.length - 1;
+    if (newCount >= needed) {
+      toast("&#127942; "+post.name+" recebeu aprovação total do Squad! Bônus garantido amanhã.", 4500);
+    } else {
+      toast("&#10003; Você aprovou a atividade de "+post.name+"! ("+newCount+"/"+needed+")", 2500);
+    }
+    /* onSnapshot re-renderiza o feed automaticamente */
+  }).catch(function(err){
+    console.error("Erro ao aprovar:", err);
+    toast("Erro ao registrar aprovação.", 2500);
+  });
+}
+
+/* ══════════════════════════════════════════
+   RESET HABIT
+══════════════════════════════════════════ */
+function resetHabit(idx) {
+  if (!todayDraw || !todayDraw.completed[idx]) return;
+  if (!confirm('Deseja refazer esta atividade? O progresso será removido.')) return;
+
+  todayDraw.completed[idx] = false;
+  if (todayDraw.photos) todayDraw.photos[idx] = null;
+  userDoneCount = todayDraw.completed.filter(Boolean).length;
+  userDoneToday = userDoneCount > 0;
+  try { sessionStorage.setItem("draw_"+today(), JSON.stringify(todayDraw)); } catch(e){}
+
+  showHabits();      /* re-renderiza os cards */
+  updateProgBar();
+  updateEnergy();
+  toast('&#8635; Atividade resetada. Bora refazer!', 2500);
+}
+
+/* ══════════════════════════════════════════
+   REPROVAR POST
+══════════════════════════════════════════ */
+function disapprovePost(e, postId) {
+  e.stopPropagation();
+  if (!currentUser) return;
+  var post = livePosts.find(function(p){ return p.id === postId; });
+  if (!post) return;
+  if (post.name === currentUser.name) { toast('Você não pode reprovar sua própria atividade.', 2000); return; }
+  if ((post.disapprovals||[]).indexOf(currentUser.name) >= 0) return;
+
+  db.collection("posts").doc(postId).update({
+    disapprovals: firebase.firestore.FieldValue.arrayUnion(currentUser.name)
+  }).then(function(){
+    toast('&#10007; Reprovação registrada para ' + post.name + '.', 2500);
+  }).catch(function(err){
+    console.error('Erro ao reprovar:', err);
+    toast('Erro ao registrar reprovação.', 2500);
+  });
+}
+
+/* ══════════════════════════════════════════
+   ROLL / DADO — 2 por dia
+══════════════════════════════════════════ */
+var rollsLeft      = 2;
+var rollNewHabits  = [];   /* 3 novas atividades geradas */
+var rollSelections = [];   /* índices selecionados (máx 2) */
+
+function loadRollsLeft() {
+  if (!currentUser) return;
+  var key    = 'rolls_' + today() + '_' + currentUser.name;
+  var stored = sessionStorage.getItem(key);
+  rollsLeft  = stored !== null ? parseInt(stored, 10) : 2;
+  updateRollBtn();
+}
+
+function saveRollsLeft() {
+  if (!currentUser) return;
+  var key = 'rolls_' + today() + '_' + currentUser.name;
+  sessionStorage.setItem(key, String(rollsLeft));
+}
+
+function updateRollBtn() {
+  var btn   = qs('#roll-btn');
+  var badge = qs('#roll-badge');
+  if (!btn) return;
+  if (rollsLeft > 0) {
+    btn.disabled     = false;
+    badge.textContent = rollsLeft;
+    badge.className  = 'roll-badge';
+  } else {
+    btn.disabled     = true;
+    badge.textContent = '0';
+    badge.className  = 'roll-badge zero';
+  }
+}
+
+function openRollModal() {
+  if (rollsLeft <= 0 || !todayDraw) return;
+
+  /* Gera 3 novas atividades que não estejam no sorteio atual */
+  var current = todayDraw.habits;
+  var pool = HABITS_DB.filter(function(h){ return current.indexOf(h) < 0; });
+  rollNewHabits  = shuffle(pool).slice(0, 3);
+  rollSelections = [];
+
+  var opts = qs('#roll-options');
+  opts.innerHTML = '';
+  rollNewHabits.forEach(function(h, i) {
+    var div = document.createElement('div');
+    div.className = 'roll-option';
+    div.id = 'ropt-' + i;
+    div.innerHTML =
+      '<div class="roll-option-chk">&#10003;</div>'+
+      '<div class="roll-option-txt">'+h+'</div>';
+    div.onclick = function(){ toggleRollOption(i); };
+    opts.appendChild(div);
+  });
+
+  qs('#roll-sel-count').textContent = '0';
+  qs('#roll-confirm').disabled = true;
+  qs('#roll-sheet-sub').textContent = 'Selecione até 2 para trocar com as suas (' + rollsLeft + ' roll(s) restante(s))';
+  qs('#roll-bg').classList.add('open');
+}
+
+function toggleRollOption(i) {
+  var idx = rollSelections.indexOf(i);
+  if (idx >= 0) {
+    rollSelections.splice(idx, 1);
+    qs('#ropt-'+i).classList.remove('selected');
+  } else {
+    if (rollSelections.length >= 2) {
+      toast('Máximo de 2 atividades por roll.', 2000);
+      return;
+    }
+    rollSelections.push(i);
+    qs('#ropt-'+i).classList.add('selected');
+  }
+  qs('#roll-sel-count').textContent = rollSelections.length;
+  qs('#roll-confirm').disabled = rollSelections.length === 0;
+}
+
+function confirmRoll() {
+  if (rollSelections.length === 0 || !todayDraw) return;
+
+  /* Troca as atividades: substituir pelas not-done e nos mesmos slots */
+  var notDoneIdx = [];
+  todayDraw.completed.forEach(function(done, i){
+    if (!done) notDoneIdx.push(i);
+  });
+
+  /* Usa os slots não concluídos disponíveis */
+  rollSelections.forEach(function(selIdx, k) {
+    if (k < notDoneIdx.length) {
+      todayDraw.habits[notDoneIdx[k]] = rollNewHabits[selIdx];
+    }
+  });
+
+  try { sessionStorage.setItem("draw_"+today(), JSON.stringify(todayDraw)); } catch(e){}
+
+  rollsLeft = Math.max(0, rollsLeft - 1);
+  saveRollsLeft();
+  updateRollBtn();
+  closeRollModal();
+  showHabits();
+  toast('&#127922; Atividade(s) trocada(s)! Roll(s) restante(s): ' + rollsLeft, 3000);
+}
+
+function closeRollModal() {
+  qs('#roll-bg').classList.remove('open');
+}
+
+function handleRollBg(e) {
+  if (e.target === qs('#roll-bg')) closeRollModal();
+}
+
+/* Chama loadRollsLeft após mostrar os hábitos */
+var _origShowHabitsEnd = null; /* patch pós-showHabits */
+
+/* ══════════════════════════════════════════
+   VICTORY ANIMATION
+══════════════════════════════════════════ */
+var victoryShown = false;
+
+function checkVictory() {
+  if (victoryShown) return;
+  /* Dispara quando o usuário conclui TODAS as suas tarefas do dia */
+  if (!todayDraw) return;
+  var total = todayDraw.habits.length;
+  var n     = todayDraw.completed.filter(Boolean).length;
+  if (n < total) return;
+
+  victoryShown = true;
+  setTimeout(showVictory, 600);
+}
+
+function showVictory() {
+  var overlay = qs('#victory-overlay');
+  var n       = todayDraw ? todayDraw.habits.length : 3;
+
+  qs('#victory-title').textContent = 'Missão Cumprida!';
+  qs('#victory-sub').textContent   = 'Você completou ' + n + ' de ' + n + ' atividades hoje!';
+
+  /* Avatares dos membros do squad */
+  var membersEl = qs('#victory-members');
+  membersEl.innerHTML = '';
+  SQUAD.forEach(function(m) {
+    var av = document.createElement('div');
+    av.className = 'victory-av';
+    av.style.background = m.color;
+    av.textContent = initials(m.name);
+    /* Destaca o usuário logado */
+    if (m.uid === 'u-me') {
+      av.style.border   = '2px solid #fbbf24';
+      av.style.boxShadow = '0 0 12px rgba(251,191,36,.5)';
+    }
+    membersEl.appendChild(av);
+  });
+
+  overlay.classList.add('show');
+  spawnConfetti();
+
+  /* Auto-fecha após 8s */
+  setTimeout(hideVictory, 8000);
+}
+
+function hideVictory() {
+  qs('#victory-overlay').classList.remove('show');
+}
+
+function spawnConfetti() {
+  var colors = ['#fbbf24','#f97316','#7c3aed','#06b6d4','#10b981','#f43f5e','#ff79c6','#a855f7'];
+  for (var i = 0; i < 70; i++) {
+    var el    = document.createElement('div');
+    el.className = 'confetti-piece';
+    var size  = 6 + Math.random() * 8;
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    var left  = Math.random() * 100;
+    var dur   = 1.8 + Math.random() * 2.2;
+    var dly   = Math.random() * 2;
+    var rot   = 360 + Math.floor(Math.random() * 720);
+    el.style.cssText =
+      'left:'+left+'vw;top:0;'+
+      'width:'+size+'px;height:'+size+'px;'+
+      'background:'+color+';'+
+      'border-radius:'+(Math.random()>.5?'50%':'3px')+';'+
+      '--cdur:'+dur+'s;--cdly:'+dly+'s;--crot:'+rot+'deg;';
+    document.body.appendChild(el);
+    setTimeout(function(){ this.remove(); }.bind(el), (dur+dly)*1000+200);
   }
 }
 
